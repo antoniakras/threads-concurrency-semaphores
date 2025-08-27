@@ -1,22 +1,60 @@
-Αντωνία Κρασουδάκη
-csd4140
+# 📚 Study Room Synchronization with Threads and Semaphores
 
-Αρχικά, το αναγνωστήριο υλοποιήθηκε ως ένας πίνακας ακεραίων μεγέθους 8 θέσεων,ενώ η
-ουρά / διάδρομος αναμονής υλοποιήθηκε ως ένας πίνακας από δείκτες προς ακέραιους.
-Αυτό γίνεται έτσι ώστε να μπορούμε να δεσμεύσουμε δυναμικά μνήμη ανάλογα με το
-πόσοι μαθητές θα χρειαστεί να περιμένουν.Όταν δημιουργείται ένα νήμα/μαθητής 
-καλείται η ρουτίνα και εκεί χρησιμοποιούμε ένα mutex για να διασφαλίσουμε ότι
-ένα νήμα θα εισέρχεται στην κρίσιμη περιοχή (study room) τη φορά.Μέσα στην κρίσιμη 
-περιοχή, στην while (entered_study > 7) ελέγχουμε αν το αναγνωστήριο έχει γεμίσει 
-χρησιμοποιώντας τον μετρητή entered_study. Όσο το αναγνωστήριο είναι γεμάτο,
-το νήμα πρέπει να περιμένει μέχρι να αδειάσει πλήρως. Αυτό γίνεται με τη χρήση της 
-pthread_cond_wait η οποία πρακτικά κανει unlock το mutex και περιμένει για ένα σήμα 
-προκειμένου να ελέγξει ξανά την συνθήκη της while για να συνεχίσει. Όταν ένα νήμα
-βρίσκεται στην while γεμίζουμε επίσης τον wait_room (διάδρομος αναμονής) με το id 
-του αντίστοιχου νήματος. Έπειτα, εισάγουμε τον μαθητή/νήμα στο αναγνωστήριο, 
-κάνουμε τα κατάλληλα prints, και μέσω της sleep δίνουμε τον χρόνο στον μαθητή
-για να διαβάσει. Στη συνέχεια, χρησιμοποιούμε και πάλι το mutex για να 
-διασφαλίσουμε ότι ένα μόνο νήμα θα εξέρχεται από το δωμάτιο κάθε φορά.
-Προτού κάνουμε unlock αυτό το mutex, ελέγχουμε αν το αναγνωστήριο έχει
-αδειάσει για να στείλουμε το σήμα στην cond_wait έτσι ώστε να συνεχίσουν
-τα προηγούμενα νήματα.
+## 📖 About
+
+This project simulates a **study room for students** using **POSIX threads (pthreads) and semaphores/mutexes** in C. It demonstrates **thread synchronization, critical section management, and FIFO ordering**. Each student is represented by a thread, and the system enforces rules:
+
+- The study room accommodates **up to 8 students** at a time.
+- Additional students must **wait in a waiting room** until the study room is empty.
+- Students enter the study room in **FIFO order** to prevent starvation.
+- Each student has a **random study duration** (5–15 seconds).
+
+This project highlights skills in **concurrent programming, synchronization primitives, and resource management**.
+
+---
+
+## ✨ Features & Technical Highlights
+
+- **Threaded Simulation**
+  - Each student is a separate **pthread**.
+  - Simulates realistic concurrent behavior.
+
+- **Study Room & Waiting Room**
+  - Study room: fixed-size array of 8 slots.
+  - Waiting room: dynamically allocated array of pointers to integers, adjusts to number of students.
+
+- **Synchronization**
+  - **Mutex** for critical section protection.
+  - **Condition variables** to manage student entry/exit.
+  - Ensures **FIFO entry** and prevents **starvation**.
+
+- **Random Study Duration**
+  - Assigns each student a random study time between 5 and 15 seconds. 
+
+- **Fairness & Concurrency**
+  - Demonstrates proper management of **shared resources**.
+  - Avoids race conditions and ensures correct order of thread execution.
+  - Program ends when all students complete their study session.
+
+---
+
+## 🧩 Implementation Details
+
+- **Critical Section:** Managed using a mutex (`pthread_mutex_t`) to ensure only one student thread modifies the study room at a time.
+
+- **Waiting Room Logic:** When the study room is full, threads wait on a condition variable. Once the room is empty, waiting threads are signaled to enter in arrival order.
+
+- **Randomized Behavior:** Sleep calls simulate study time, demonstrating concurrency handling under non-deterministic durations.
+
+---
+
+## 🛠️ Setup & Run
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/antoniakras/threads-concurrency-semaphores.git
+   cd threads-concurrency-semaphores
+   make
+   ./thread
+        Enter the number of students when prompted.
+        The program will simulate students entering and leaving the study room according to the rules.
